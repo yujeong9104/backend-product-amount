@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -42,10 +42,10 @@ public class Promotion {
     private int discountValue; // 할인 금액 or 할인 %
 	
 	@Column(name = "use_started_at", nullable = false)
-    private Date useStartedAt; // 쿠폰 사용가능 시작 기간
+    private LocalDate useStartedAt; // 쿠폰 사용가능 시작 기간
 	
 	@Column(name = "use_ended_at", nullable = false)
-    private Date useEndedAt; // 쿠폰 사용가능 종료 기간
+    private LocalDate useEndedAt; // 쿠폰 사용가능 종료 기간
 	
 	@OneToMany(mappedBy="promotion", cascade=CascadeType.REMOVE)
 	private List<PromotionProducts> promotionProductsList;

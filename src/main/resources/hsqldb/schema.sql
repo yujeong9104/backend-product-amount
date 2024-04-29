@@ -30,13 +30,7 @@ CREATE TABLE promotion_products
     id           INTEGER NOT NULL,
     promotion_id INTEGER,
     product_id   INTEGER,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (promotion_id) REFERENCES promotion(id),
+    FOREIGN KEY (product_id) REFERENCES product(id)
 );
-
-ALTER TABLE promotion_products
-ADD CONSTRAINT fk_promotion_products_product
-FOREIGN KEY (product_id) REFERENCES product(id);
-
-ALTER TABLE promotion_products
-ADD CONSTRAINT fk_promotion_products_promotion
-FOREIGN KEY (promotion_id) REFERENCES promotion(id);
