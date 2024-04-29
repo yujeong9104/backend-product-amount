@@ -79,10 +79,10 @@ public class PromotionProductsService {
 		}
 		
 		if(finalPrice<Price.MIN_PRICE.getPrice()) {
-			discountPrice += Price.MIN_PRICE.getPrice()-finalPrice;
+			discountPrice -= Price.MIN_PRICE.getPrice()-finalPrice;
 			finalPrice = Price.MIN_PRICE.getPrice();
 		}else if(finalPrice> Price.MAX_PRICE.getPrice()) {
-			discountPrice -= Price.MAX_PRICE.getPrice()-finalPrice;
+			discountPrice += Price.MAX_PRICE.getPrice()-finalPrice;
 			finalPrice = Price.MAX_PRICE.getPrice();
 		}
 		
