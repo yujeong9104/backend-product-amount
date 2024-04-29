@@ -1,11 +1,25 @@
 package antigravity.repository;
 
+
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-import antigravity.domain.entity.PromotionProducts;
+import org.springframework.stereotype.Repository;
 
-public interface PromotionProductsRepository extends JpaRepository<PromotionProducts, Integer>{
-	List<PromotionProducts> findByProductId(int productId);
+@Repository
+public class PromotionProductsRepository{
+	
+	@PersistenceContext
+    private EntityManager em;
+	
+    public List<Integer> findPromotionIdByProductId(int productId) {
+        return em.createQuery("SELECT p.promotion.id FROM PromotionProducts p WHERE p.product.id = :productId", Integer.class)
+                .setHint("org.hibernate.readOnly", true)
+                .setParameter("productId", productId)
+                .getResultList();
+    }
+	
+	
 }

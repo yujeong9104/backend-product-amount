@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class PromotionProductsService {
-	
+	@Autowired
 	private final PromotionProductsRepository promotionProductsRepository;
 	
 	@Transactional(readOnly = true)
@@ -30,9 +31,7 @@ public class PromotionProductsService {
 		List<Integer> promotionIdList = promotionList.stream().map(p->p.getId()).collect(Collectors.toList());
 		Set<Integer> promotionIdset = new HashSet<>(promotionIdList);
 		
-		List<PromotionProducts> promotionProducts = promotionProductsRepository.findByProductId(productId);
-		List<Integer> promotionIdListFromPromotionProducts = promotionProducts
-				.stream().map(p->p.getId()).distinct().collect(Collectors.toList());
+		List<Integer> promotionIdListFromPromotionProducts = promotionProductsRepository.findPromotionIdByProductId(productId);
 		Set<Integer> promotionIdSetFromPromotionProducts = new HashSet<>(promotionIdListFromPromotionProducts);
 		
 		if(!promotionIdSetFromPromotionProducts.containsAll(promotionIdset)) {

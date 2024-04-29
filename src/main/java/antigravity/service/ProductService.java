@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +21,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    
     private final PromotionService promotionService;
-    
     private final PromotionProductsService promotionProductsService;
     
     public ProductAmountResponse getProductAmount(ProductInfoRequest request) {
+    	int productId = request.getProductId();
+    	int[] couponIds = request.getCouponIds();
     	//유효성 검사
-    	Product product = isProductExists(request.getProductId());
-    	List <Promotion> promotionList = promotionService.isPromotionsAbled(request.getCouponIds());
-    	promotionProductsService.isPromotionProductsAbled(product.getId(),promotionList);
+    	Product product = isProductExists(productId);
+    	promotionService.isDuplicatedPromotion(couponIds);
+    	List<Promotion> promotionList = promotionService.getPromotionList(couponIds);
+    	promotionService.isPromotionNotFound(couponIds, promotionList);
+    	promotionService.isInvailedPomotionPeriod(promotionList);
+    	promotionProductsService.isPromotionProductsAbled(productId,promotionList);
     	//할인 계산
     	ProductAmountResponse prouductAmountResponse = promotionProductsService.applyPromotionOnProduct(product,promotionList);
     	return prouductAmountResponse;

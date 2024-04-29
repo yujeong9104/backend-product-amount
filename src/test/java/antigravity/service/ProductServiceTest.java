@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import antigravity.domain.entity.Product;
 import antigravity.enums.ErrorCode;
 import antigravity.repository.ProductRepository;
+import antigravity.repository.PromotionRepository;
 import exception.ProductRelatedException;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,18 +33,29 @@ class ProductServiceTest {
 	
 	@Mock
 	private ProductRepository productRepostory;
+	@Mock
+	private PromotionRepository promotionRepostory;
 
-    @Transactional
+    
     @Test
-    void isProductExistsTest() {
+    @Transactional
+    @DisplayName("상품 조회 불가능 오류")
+    void productNotFountTest() {
     	
     	given(productRepostory.findById(any())).willReturn(Optional.empty());
     	
-    	ProductRelatedException e= assertThrows(ProductRelatedException.class, () -> {
+    	ProductRelatedException e = assertThrows(ProductRelatedException.class, () -> {
     		productService.isProductExists(1);
     	});
     	
     	assertEquals(ErrorCode.PRODUCT_NOT_FOUND,e.getErrorCode());
     	
     }
+    
 }
+
+
+
+
+
+
