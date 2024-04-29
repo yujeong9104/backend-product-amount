@@ -11,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import antigravity.domain.entity.Product;
 import antigravity.domain.entity.Promotion;
 import antigravity.domain.entity.PromotionProducts;
+import antigravity.enums.ErrorCode;
+import antigravity.enums.Price;
 import antigravity.model.response.ProductAmountResponse;
 import antigravity.repository.PromotionProductsRepository;
-import exception.ErrorCode;
 import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +39,7 @@ public class PromotionProductsService {
 			throw new ProductRelatedException(ErrorCode.UNAPPLICABLE_PROMOTION);
 		}
 	}
-	
+
 	public ProductAmountResponse applyPromotionOnProduct(Product product, List<Promotion> promotionList) {
 		
 		int originPrice = product.getPrice();
@@ -46,30 +47,48 @@ public class PromotionProductsService {
 		int finalPrice = product.getPrice();
 		
 		for(Promotion p : promotionList) {
-			//10000보다 같거나 작으면 그만둠
-			
+			if(finalPrice<=Price.MIN_PRICE.getPrice()) {
+				break;
+			}
 			String promotionType = p.getPromotionType();
+			int gap = 0;
 			switch (promotionType) {
 			case "COUPON": //금액할인
-				//discountType이 "WON"이어야 함
-				//PROMOTION_DISCOUNT_TYPE_MISMATCH
-				
+				if(!p.getPromotionType().equals("WON")) {
+					throw new ProductRelatedException(ErrorCode.PROMOTION_DISCOUNT_TYPE_MISMATCH);
+				}
+				gap = p.getDiscountValue();
+				discountPrice += gap;
+				finalPrice -= gap;
 				break;
 			case "CODE": //%할인
-				//discountType이 "PERCENT"이어야 함
-				//PROMOTION_DISCOUNT_TYPE_MISMATCH
-				
+				if(!p.getPromotionType().equals("PERCENT")) {
+					throw new ProductRelatedException(ErrorCode.PROMOTION_DISCOUNT_TYPE_MISMATCH);
+				}
+				int persent = p.getDiscountValue();
+				if(persent < 0 || persent > 100) {
+					throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_VALUE);
+				}
+				gap = originPrice*persent;
+				discountPrice += gap;
+				finalPrice -= gap;
 				break;
-			default:  //유효하지 않은 프로모션 타입입니다.
-				//INVALID_PROMOTION_TYPE
-				break;
+			default:
+				throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_TYPE);
 			}
 			
 		}
 		
-		//최소 상품가격은 ₩ 10,000 입니다.
-		//최대 상품가격은 ₩ 10,000,000 입니다.
-		//최종 상품 금액은 천단위 절삭합니다.
+		if(finalPrice<Price.MIN_PRICE.getPrice()) {
+			discountPrice += Price.MIN_PRICE.getPrice()-finalPrice;
+			finalPrice = Price.MIN_PRICE.getPrice();
+		}else if(finalPrice> Price.MAX_PRICE.getPrice()) {
+			discountPrice -= Price.MAX_PRICE.getPrice()-finalPrice;
+			finalPrice = Price.MAX_PRICE.getPrice();
+		}
+		
+		discountPrice += finalPrice%Price.UNIT_PRICE.getPrice();
+		finalPrice = (finalPrice/Price.UNIT_PRICE.getPrice())*Price.UNIT_PRICE.getPrice();
 		
 		return new ProductAmountResponse(product.getName(),originPrice,discountPrice,finalPrice);
 	}

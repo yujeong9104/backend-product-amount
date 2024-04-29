@@ -1,5 +1,6 @@
 package exception;
 
+import antigravity.enums.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

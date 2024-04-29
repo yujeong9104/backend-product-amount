@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import antigravity.domain.entity.Promotion;
+import antigravity.enums.ErrorCode;
 import antigravity.repository.PromotionRepository;
-import exception.ErrorCode;
 import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
 

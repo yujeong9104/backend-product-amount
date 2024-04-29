@@ -19,9 +19,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import antigravity.domain.entity.Product;
+import antigravity.enums.ErrorCode;
 import antigravity.repository.ProductRepository;
 import exception.ProductRelatedException;
-import exception.ErrorCode;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {

@@ -2,10 +2,11 @@ package antigravity.service;
 
 import antigravity.domain.entity.Product;
 import antigravity.domain.entity.Promotion;
+import antigravity.enums.ErrorCode;
+import antigravity.enums.Price;
 import antigravity.model.request.ProductInfoRequest;
 import antigravity.model.response.ProductAmountResponse;
 import antigravity.repository.ProductRepository;
-import exception.ErrorCode;
 import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
 
@@ -28,10 +29,6 @@ public class ProductService {
     	//유효성 검사
     	Product product = isProductExists(request.getProductId());
     	List <Promotion> promotionList = promotionService.isPromotionsAbled(request.getCouponIds());
-        //상품 가격이 만원 미만이면 안 됨
-    	
-    	//상품 가격이 만원이면 프로모션 적용 불필요
-    
     	promotionProductsService.isPromotionProductsAbled(product.getId(),promotionList);
     	//할인 계산
     	ProductAmountResponse prouductAmountResponse = promotionProductsService.applyPromotionOnProduct(product,promotionList);
