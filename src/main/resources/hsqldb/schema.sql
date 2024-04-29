@@ -33,3 +33,10 @@ CREATE TABLE promotion_products
     PRIMARY KEY (id)
 );
 
+ALTER TABLE promotion_products
+ADD CONSTRAINT fk_promotion_products_product
+FOREIGN KEY (product_id) REFERENCES product(id);
+
+ALTER TABLE promotion_products
+ADD CONSTRAINT fk_promotion_products_promotion
+FOREIGN KEY (promotion_id) REFERENCES promotion(id);

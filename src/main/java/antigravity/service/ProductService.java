@@ -4,19 +4,34 @@ import antigravity.domain.entity.Product;
 import antigravity.model.request.ProductInfoRequest;
 import antigravity.model.response.ProductAmountResponse;
 import antigravity.repository.ProductRepository;
+import exception.ErrorCode;
+import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class ProductService {
-    private final ProductRepository repository;
+    private final ProductRepository productRepository;
 
     public ProductAmountResponse getProductAmount(ProductInfoRequest request) {
-        System.out.println("상품 가격 추출 로직을 완성 시켜주세요.");
-
-        Product product = repository.getProduct(request.getProductId());
-
+    	
+    	Product product = isProductExists(request.getProductId());
+        
+    	
         return null;
+        
     }
+    
+    @Transactional(readOnly = true)
+    public Product isProductExists (int productId) {
+    	Optional <Product> opProduct = productRepository.findById(productId);
+    	opProduct.orElseThrow(() -> new ProductRelatedException(ErrorCode.PRODUCT_NOT_FOUND));
+        return opProduct.get();
+    }
+    
 }
