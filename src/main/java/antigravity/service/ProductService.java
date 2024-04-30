@@ -1,10 +1,10 @@
 package antigravity.service;
 
+import antigravity.controller.ProductRelatedException;
 import antigravity.domain.entity.Product;
 import antigravity.enums.ErrorCode;
 import antigravity.enums.Price;
 import antigravity.repository.ProductRepository;
-import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;

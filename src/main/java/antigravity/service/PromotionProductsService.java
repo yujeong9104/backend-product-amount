@@ -9,14 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import antigravity.controller.ProductRelatedException;
 import antigravity.domain.entity.Product;
 import antigravity.domain.entity.Promotion;
-import antigravity.domain.entity.PromotionProducts;
 import antigravity.enums.ErrorCode;
 import antigravity.enums.Price;
 import antigravity.model.response.ProductAmountResponse;
 import antigravity.repository.PromotionProductsRepository;
-import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

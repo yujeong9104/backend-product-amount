@@ -4,17 +4,9 @@ package antigravity.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,15 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import antigravity.controller.ProductRelatedException;
 import antigravity.domain.entity.Product;
-import antigravity.domain.entity.Promotion;
 import antigravity.enums.ErrorCode;
 import antigravity.enums.Price;
-import antigravity.model.request.ProductInfoRequest;
-import antigravity.model.response.ProductAmountResponse;
 import antigravity.repository.ProductRepository;
-import antigravity.repository.PromotionRepository;
-import exception.ProductRelatedException;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {

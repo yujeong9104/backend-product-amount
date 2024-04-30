@@ -19,10 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import antigravity.controller.ProductRelatedException;
 import antigravity.domain.entity.Promotion;
 import antigravity.enums.ErrorCode;
 import antigravity.repository.PromotionRepository;
-import exception.ProductRelatedException;
 
 @ExtendWith(MockitoExtension.class)
 class PromotionServiceTest {

@@ -10,10 +10,10 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import antigravity.controller.ProductRelatedException;
 import antigravity.domain.entity.Promotion;
 import antigravity.enums.ErrorCode;
 import antigravity.repository.PromotionRepository;
-import exception.ProductRelatedException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
