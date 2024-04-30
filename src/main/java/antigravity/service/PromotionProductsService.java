@@ -42,57 +42,58 @@ public class PromotionProductsService {
 	public ProductAmountResponse applyPromotionOnProduct(Product product, List<Promotion> promotionList) {
 		
 		int originPrice = product.getPrice();
-		int discountPrice = 0;
-		int finalPrice = product.getPrice();
+		double double_finalPrice = product.getPrice();
 		
+		boolean isZero = false;
 		for(Promotion p : promotionList) {
-			if(finalPrice<=Price.MIN_PRICE.getPrice()) {
+			/*
+			최소 상품가격이 쿠폰 적용 후 가격이라면
+			if(double_finalPrice<=Price.MIN_PRICE.getPrice()) {
+				break;
+			}
+			*/
+			//상품 가격은 0원 이상이어야 함
+			if(double_finalPrice<=0) {
+				isZero = true;
 				break;
 			}
 			String promotionType = p.getPromotionType();
-			int gap = 0;
+			double gap = 0;
 			switch (promotionType) {
-			case "COUPON": //금액할인
-				if(!p.getPromotionType().equals("WON")) {
-					throw new ProductRelatedException(ErrorCode.PROMOTION_DISCOUNT_TYPE_MISMATCH);
-				}
-				gap = p.getDiscountValue();
-				discountPrice += gap;
-				finalPrice -= gap;
-				break;
-			case "CODE": //%할인
-				if(!p.getPromotionType().equals("PERCENT")) {
-					throw new ProductRelatedException(ErrorCode.PROMOTION_DISCOUNT_TYPE_MISMATCH);
-				}
-				int persent = p.getDiscountValue();
-				if(persent < 0 || persent > 100) {
-					throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_VALUE);
-				}
-				gap = originPrice*persent;
-				discountPrice += gap;
-				finalPrice -= gap;
-				break;
-			default:
-				throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_TYPE);
-			}
-			
+				case "COUPON": //금액할인
+					gap = p.getDiscountValue();
+					double_finalPrice -= gap;
+					break;
+				case "CODE": //%할인
+					double persent = p.getDiscountValue()*(0.01);
+					gap = originPrice*persent;
+					double_finalPrice -= gap;
+					break;
+				default:
+					throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_TYPE);
+			}	
 		}
 		
-		if(finalPrice<Price.MIN_PRICE.getPrice()) {
-			discountPrice -= Price.MIN_PRICE.getPrice()-finalPrice;
-			finalPrice = Price.MIN_PRICE.getPrice();
-		}else if(finalPrice> Price.MAX_PRICE.getPrice()) {
-			discountPrice += Price.MAX_PRICE.getPrice()-finalPrice;
-			finalPrice = Price.MAX_PRICE.getPrice();
+		/*
+		최소 상품가격, 최대 상품가격이 쿠폰 적용 후 가격인 경우
+		if(double_finalPrice<Price.MIN_PRICE.getPrice()) {
+			double_finalPrice = Price.MIN_PRICE.getPrice();
+		}else if(double_finalPrice> Price.MAX_PRICE.getPrice()) {
+			double_finalPrice = Price.MAX_PRICE.getPrice();
 		}
 		
-		discountPrice += finalPrice%Price.UNIT_PRICE.getPrice();
-		finalPrice = (finalPrice/Price.UNIT_PRICE.getPrice())*Price.UNIT_PRICE.getPrice();
+		*/
+		
+		int finalPrice = 0;
+		int discountPrice = originPrice;
+		if(!isZero) {
+			finalPrice = (int) (double_finalPrice/Price.UNIT_PRICE.getPrice())*Price.UNIT_PRICE.getPrice();
+			discountPrice = originPrice - finalPrice;
+		}
 		
 		return new ProductAmountResponse(product.getName(),originPrice,discountPrice,finalPrice);
 	}
 	
-
 
 
 }

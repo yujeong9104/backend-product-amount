@@ -37,13 +37,35 @@ public class PromotionService {
 		}
 	}
 	
-	//프모로션의 유효기간이 맞는가 검사
-	public void isInvailedPomotionPeriod(List<Promotion> promotionList) {
+	//프모로션이 유효한가 검사
+	public void isInvailedPomotion(List<Promotion> promotionList) {
 		ZoneId zoneId = ZoneId.of("Asia/Seoul");
 		LocalDate currentDateInKorea = LocalDate.now(zoneId);
-		for(Promotion promotion : promotionList) {
-			if(promotion.getUseStartedAt().isAfter(currentDateInKorea) || promotion.getUseEndedAt().isBefore(currentDateInKorea) ) {
+		for(Promotion p : promotionList) {
+			//프로모션 기간이 사용가능한 기간인가 검사
+			if(p.getUseStartedAt().isAfter(currentDateInKorea) || p.getUseEndedAt().isBefore(currentDateInKorea) ) {
 				throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_PERIOD);
+			}
+			switch(p.getPromotionType()) {
+				case "COUPON":
+					//프로모션 타입이 일치하는가 검사
+					if(!p.getDiscountType().equals("WON")) {
+						throw new ProductRelatedException(ErrorCode.PROMOTION_DISCOUNT_TYPE_MISMATCH);
+					}
+					break;
+				case "CODE":
+					//프로모션 타입이 일치하는가 검사
+					if(!p.getDiscountType().equals("PERCENT")) {
+						throw new ProductRelatedException(ErrorCode.PROMOTION_DISCOUNT_TYPE_MISMATCH);
+					}
+					//퍼센트가 유효한 값인가 검사
+					int persent = p.getDiscountValue();
+					if(persent < 0 || persent > 100) {
+						throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_VALUE);
+					}
+					break;
+				default:
+					throw new ProductRelatedException(ErrorCode.INVALID_PROMOTION_TYPE);
 			}
 		}
 	}

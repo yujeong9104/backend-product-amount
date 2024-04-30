@@ -18,13 +18,10 @@ import antigravity.domain.entity.Promotion;
 import antigravity.domain.entity.PromotionProducts;
 
 @SpringBootTest
-public class RepositoryTest {
+public class PromotionProductsRepositoryTest {
 	
 	@Autowired
 	private PromotionProductsRepository promotionProductsRepository;
-	
-	@Autowired
-	private PromotionRepository promotionRepository;
 	
 	@Test
 	@Transactional

@@ -10,6 +10,8 @@ import lombok.Getter;
 public enum ErrorCode {
 	
 	PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 상품입니다."),
+	PRODUCT_UNDER_MIN_PRICE(HttpStatus.BAD_REQUEST, "최소 가격 미만의 상품입니다."),
+	PRODUCT_UPPER_MAX_PRICE(HttpStatus.BAD_REQUEST, "최대 가격 초과의 상품입니다."),
 	
 	DUPLICATE_PROMOTION(HttpStatus.BAD_REQUEST, "중복된 프로모션이 존재합니다."),
 	PROMOTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 프로모션이 있습니다."),

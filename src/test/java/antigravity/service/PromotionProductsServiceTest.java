@@ -1,19 +1,14 @@
 package antigravity.service;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
-import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,11 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import antigravity.domain.entity.Product;
 import antigravity.domain.entity.Promotion;
-import antigravity.domain.entity.PromotionProducts;
 import antigravity.enums.ErrorCode;
-import antigravity.repository.ProductRepository;
+import antigravity.model.response.ProductAmountResponse;
 import antigravity.repository.PromotionProductsRepository;
-import antigravity.repository.PromotionRepository;
 import exception.ProductRelatedException;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +34,7 @@ public class PromotionProductsServiceTest {
 	private PromotionProductsRepository promotionProductsRepository;
 
     @Test
-    @DisplayName("프로모션이 해당 상품에 사용 가능한 것인가 검사 - 완료")
+    @DisplayName("프로모션이 해당 상품에 사용 가능한 것인가 검사 - 성공")
     void isPromotionProductsAbledTestCompleted() {
         int productId = 1;
         List<Promotion> promotionList = new ArrayList<>();
@@ -75,6 +68,113 @@ public class PromotionProductsServiceTest {
     	assertEquals(ErrorCode.UNAPPLICABLE_PROMOTION,e.getErrorCode());
         
     }
+
+    @Test
+    @DisplayName("프로모션 적용 가격")
+    public void ApplyPromotionOnProductTest() {
+    	
+    	//given
+    	Product product = new Product();
+    	product.setName("상품1");
+    	product.setPrice(22200);
+    	
+        List<Promotion> promotionList = List.of(
+        		// 유효하지 않는 프로모션 기간 삽입
+        		new Promotion(1,"COUPON", "프로모션1", "WON", 1000, LocalDate.now(), LocalDate.now().plusDays(1), null),
+                new Promotion(2,"CODE", "프로모션2", "PERCENT", 20, LocalDate.now(), LocalDate.now().plusDays(1), null)
+        );
+        
+        // When
+        ProductAmountResponse response = promotionProductsService.applyPromotionOnProduct(product, promotionList);
+        
+        // Then
+        assertEquals("상품1", response.getName());
+        assertEquals(22200, response.getOriginPrice());
+        assertEquals(6200, response.getDiscountPrice());
+        assertEquals(16000, response.getFinalPrice());
+
+    }
     
+    @Test
+    @DisplayName("프로모션 적용 가격은 최소 0")
+    public void ApplyPromotionOnProductTestZero() {
+    	
+    	//given
+    	Product product = new Product();
+    	product.setName("상품1");
+    	product.setPrice(1200);
+    	
+        List<Promotion> promotionList = List.of(
+        		// 유효하지 않는 프로모션 기간 삽입
+        		new Promotion(1,"COUPON", "프로모션1", "WON", 1000, LocalDate.now(), LocalDate.now().plusDays(1), null),
+                new Promotion(2,"CODE", "프로모션2", "PERCENT", 20, LocalDate.now(), LocalDate.now().plusDays(1), null)
+        );
+        
+        // When
+        ProductAmountResponse response = promotionProductsService.applyPromotionOnProduct(product, promotionList);
+        
+        // Then
+        assertEquals("상품1", response.getName());
+        assertEquals(1200, response.getOriginPrice());
+        assertEquals(1200, response.getDiscountPrice());
+        assertEquals(0, response.getFinalPrice());
+
+    }
+    
+    /*
+	최소 상품가격, 최대 상품가격이 쿠폰 적용 후 가격인 경우
+    
+    @Test
+    @DisplayName("프로모션 최소 적용 가격")
+    public void testApplyPromotionOnProduct() {
+    	
+    	//given
+    	Product product = new Product();
+    	product.setName("상품1");
+    	product.setPrice(12000);
+    	
+        List<Promotion> promotionList = List.of(
+        		new Promotion(1,"COUPON", "프로모션1", "WON", 1000, LocalDate.now(), LocalDate.now().plusDays(1), null),
+                new Promotion(2,"CODE", "프로모션2", "PERCENT", 20, LocalDate.now(), LocalDate.now().plusDays(1), null)
+        );
+        
+        // When
+        ProductAmountResponse response = promotionProductsService.applyPromotionOnProduct(product, promotionList);
+        
+        // Then
+        assertEquals("상품1", response.getName());
+        assertEquals(12000, response.getOriginPrice());
+        assertEquals(2000, response.getDiscountPrice());
+        assertEquals(10000, response.getFinalPrice());
+
+    }
+    
+    
+    @Test
+    @DisplayName("프로모션 최대 적용 가격")
+    public void testApplyPromotionOnProductTestMaximum() {
+    	//given
+    	Product product = new Product();
+    	product.setName("상품1");
+    	product.setPrice(19000000);
+    	
+        List<Promotion> promotionList = List.of(
+        		// 유효하지 않는 프로모션 기간 삽입
+        		new Promotion(1,"COUPON", "프로모션1", "WON", 1000, LocalDate.now(), LocalDate.now().plusDays(1), null),
+                new Promotion(2,"CODE", "프로모션2", "PERCENT", 20, LocalDate.now(), LocalDate.now().plusDays(1), null)
+        );
+        
+        // When
+        ProductAmountResponse response = promotionProductsService.applyPromotionOnProduct(product, promotionList);
+        
+        // Then
+        assertEquals("상품1", response.getName());
+        assertEquals(19000000, response.getOriginPrice());
+        assertEquals(9000000, response.getDiscountPrice());
+        assertEquals(10000000, response.getFinalPrice());
+
+    }
+    
+    */
 	
 }
