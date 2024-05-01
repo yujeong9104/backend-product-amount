@@ -9,7 +9,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PromotionProductsRepository{
+public class PromotionProductsRepositoryEM{
 	
 	@PersistenceContext
     private EntityManager em;

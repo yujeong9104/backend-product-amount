@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class PromotionApplyedProductsService {
+public class PromotionApplyedProductService {
+	
 	private final ProductService productService;
     private final PromotionService promotionService;
     private final PromotionProductsService promotionProductsService;
@@ -20,7 +21,7 @@ public class PromotionApplyedProductsService {
     public ProductAmountResponse getProductAmount(ProductInfoRequest request) {
     	int productId = request.getProductId();
     	int[] couponIds = request.getCouponIds();
-    	//유효성 검사 및 프로덕트, 프로모션 정보 조회
+    	//유효성 검사 및 정보 조회
     	Product product = productService.isProductExists(productId);
     	productService.isProductPriceValid(product.getPrice());
     	promotionService.isDuplicatedPromotion(couponIds);

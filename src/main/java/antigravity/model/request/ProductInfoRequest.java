@@ -8,6 +8,8 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class ProductInfoRequest {
+	
     private int productId;
     private int[] couponIds;
+    
 }

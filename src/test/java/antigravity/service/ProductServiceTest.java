@@ -4,6 +4,7 @@ package antigravity.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
@@ -28,69 +29,83 @@ class ProductServiceTest {
 	private ProductService productService;
        
 	@Mock
-	private ProductRepository productRepostory;
+	private ProductRepository productRepository;
 
     @Test
     @DisplayName("상품 조회 성공")
     void productNotFountTestCompleted() {
-    	int productId = 2;
     	
-        Product fakeProduct = new Product();
-        fakeProduct.setId(productId);
-        fakeProduct.setName("상품1");
-        fakeProduct.setPrice(1000);
+    	//given
+    	int productId = anyInt();
+    	Product product = new Product();
+    	given(productRepository.findById(productId)).willReturn(Optional.of(product));
     	
-    	given(productRepostory.findById(productId)).willReturn(Optional.of(fakeProduct));
-    	
+    	//when, then
     	assertDoesNotThrow(() -> productService.isProductExists(productId));
     	
     }
-	
-	
+
     
     @Test
     @DisplayName("상품 조회 오류")
     void productNotFountTest() {
-    	int productId = 3;
     	
-    	given(productRepostory.findById(productId)).willReturn(Optional.empty());
+    	//given
+    	int productId = anyInt();
+    	given(productRepository.findById(productId)).willReturn(Optional.empty());
     	
+    	//when
     	ProductRelatedException e = assertThrows(ProductRelatedException.class, () -> {
     		productService.isProductExists(productId);
     	});
     	
+    	//then
     	assertEquals(ErrorCode.PRODUCT_NOT_FOUND,e.getErrorCode());
     	
     }
     
     @Test
-    @DisplayName("적정 상품 가격")
+    @DisplayName("적정 상품 가격 성공")
     void isProductPriceValidTestCompleted(){
+    	
+    	//given
+    	int price = Price.MIN_PRICE.getPrice() + 1;
 
-    	assertDoesNotThrow(() -> productService.isProductPriceValid(Price.MIN_PRICE.getPrice() + 1));
+    	//when, then
+    	assertDoesNotThrow(() -> productService.isProductPriceValid(price));
 	
     }
     
     @Test
-    @DisplayName("적정 상품 가격 미만")
+    @DisplayName("적정 상품 가격 미만 오류")
     void isProductPriceValidTestUnder(){
-
+    	
+    	//given
+    	int price = Price.MIN_PRICE.getPrice() - 1;
+    	
+    	//when
     	ProductRelatedException e = assertThrows(ProductRelatedException.class, () -> {
-    		productService.isProductPriceValid(Price.MIN_PRICE.getPrice() - 1);
+    		productService.isProductPriceValid(price);
     	});
     	
+    	//then
     	assertEquals(ErrorCode.PRODUCT_UNDER_MIN_PRICE,e.getErrorCode());
     	
     }
     
     @Test
-    @DisplayName("적정 상품 가격 초과")
+    @DisplayName("적정 상품 가격 초과 오류")
     void isProductPriceValidTestUpper(){
-
+    	
+    	//given
+    	int price = Price.MAX_PRICE.getPrice() + 1;
+    	
+    	//when
     	ProductRelatedException e = assertThrows(ProductRelatedException.class, () -> {
-    		productService.isProductPriceValid(Price.MAX_PRICE.getPrice() + 1);
+    		productService.isProductPriceValid(price);
     	});
     	
+    	//then    	
     	assertEquals(ErrorCode.PRODUCT_UPPER_MAX_PRICE,e.getErrorCode());
     	
     }

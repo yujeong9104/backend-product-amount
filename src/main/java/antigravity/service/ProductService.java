@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class ProductService {
+	
     private final ProductRepository productRepository;
     
     //존재하는 상품인가 검사

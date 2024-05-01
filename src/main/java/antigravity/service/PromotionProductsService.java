@@ -15,14 +15,15 @@ import antigravity.domain.entity.Promotion;
 import antigravity.enums.ErrorCode;
 import antigravity.enums.Price;
 import antigravity.model.response.ProductAmountResponse;
-import antigravity.repository.PromotionProductsRepository;
+import antigravity.repository.PromotionProductsRepositoryEM;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class PromotionProductsService {
+	
 	@Autowired
-	private final PromotionProductsRepository promotionProductsRepository;
+	private final PromotionProductsRepositoryEM promotionProductsRepositoryEM;
 	
 	@Transactional(readOnly = true)
 	//프로모션이 해당 상품에 사용 가능한 것인가 검사
@@ -30,7 +31,7 @@ public class PromotionProductsService {
 		List<Integer> promotionIdList = promotionList.stream().map(p->p.getId()).collect(Collectors.toList());
 		Set<Integer> promotionIdset = new HashSet<>(promotionIdList);
 		
-		List<Integer> promotionIdListFromPromotionProducts = promotionProductsRepository.findPromotionIdByProductId(productId);
+		List<Integer> promotionIdListFromPromotionProducts = promotionProductsRepositoryEM.findPromotionIdByProductId(productId);
 		Set<Integer> promotionIdSetFromPromotionProducts = new HashSet<>(promotionIdListFromPromotionProducts);
 		
 		if(!promotionIdSetFromPromotionProducts.containsAll(promotionIdset)) {
@@ -43,7 +44,7 @@ public class PromotionProductsService {
 		int originPrice = product.getPrice();
 		double double_finalPrice = product.getPrice();
 		
-		boolean isZero = false;
+		boolean isFinalMinPrice = false;
 		for(Promotion p : promotionList) {
 			/*
 			최소 상품가격이 쿠폰 적용 후 가격이라면
@@ -51,9 +52,8 @@ public class PromotionProductsService {
 				break;
 			}
 			*/
-			//상품 가격은 0원 이상이어야 함
-			if(double_finalPrice<=0) {
-				isZero = true;
+			if(double_finalPrice<=Price.FINAL_MIN_PRICE.getPrice()) {
+				isFinalMinPrice = true;
 				break;
 			}
 			String promotionType = p.getPromotionType();
@@ -80,15 +80,14 @@ public class PromotionProductsService {
 		}else if(double_finalPrice> Price.MAX_PRICE.getPrice()) {
 			double_finalPrice = Price.MAX_PRICE.getPrice();
 		}
-		
 		*/
 		
-		int finalPrice = 0;
-		int discountPrice = originPrice;
-		if(!isZero) {
+		int finalPrice = Price.FINAL_MIN_PRICE.getPrice();
+		if(!isFinalMinPrice) {
 			finalPrice = (int) (double_finalPrice/Price.UNIT_PRICE.getPrice())*Price.UNIT_PRICE.getPrice();
-			discountPrice = originPrice - finalPrice;
 		}
+		
+		int discountPrice = originPrice - finalPrice;
 		
 		return new ProductAmountResponse(product.getName(),originPrice,discountPrice,finalPrice);
 	}

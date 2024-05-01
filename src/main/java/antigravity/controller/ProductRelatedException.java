@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class ProductRelatedException extends RuntimeException{
 	
-
+	private static final long serialVersionUID = 1L;
 	private final ErrorCode errorCode;
 	
 }
